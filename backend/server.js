@@ -9,6 +9,7 @@ const authRoutes = require('./routes/authRoutes');
 const doctorRoutes = require('./routes/doctorRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
 const userRoutes = require('./routes/userRoutes');
+const clinicRoutes = require('./routes/clinicRoutes');
 
 // Initialize express app
 const app = express();
@@ -34,6 +35,7 @@ app.get('/', (req, res) => {
             doctors: '/api/doctors',
             appointments: '/api/appointments',
             users: '/api/users',
+            clinics: '/api/clinics',
         },
     });
 });
@@ -42,6 +44,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/doctors', doctorRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/clinics', clinicRoutes);
 
 // Error handler middleware (must be last)
 app.use(errorHandler);

@@ -175,3 +175,117 @@ exports.deleteDoctor = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 };
+
+// @desc    Get doctor availability
+// @route   GET /api/doctors/:id/availability
+// @access  Public
+exports.getDoctorAvailability = async (req, res) => {
+    try {
+        const { date } = req.query;
+
+        if (!date) {
+            return res.status(400).json({ message: 'Please provide a date' });
+        }
+
+        const doctor = await Doctor.findById(req.params.id);
+
+        if (!doctor) {
+            return res.status(404).json({ message: 'Doctor not found' });
+        }
+
+        if (!doctor.isAvailable) {
+            return res.status(400).json({
+                message: 'Doctor is currently not available for appointments'
+            });
+        }
+
+        // Get the day of week from the provided date
+        const appointmentDate = new Date(date);
+        const dayOfWeek = appointmentDate.toLocaleDateString('en-US', { weekday: 'long' });
+
+        // Find the doctor's availability for that day
+        const dayAvailability = doctor.availability.find(
+            (avail) => avail.day === dayOfWeek && !avail.isClosed
+        );
+
+        if (!dayAvailability) {
+            return res.json({
+                date,
+                day: dayOfWeek,
+                available: false,
+                message: 'Doctor is not available on this day',
+                slots: [],
+            });
+        }
+
+        // Get all booked appointments for this doctor on this date
+        const Appointment = require('../models/Appointment');
+        const bookedAppointments = await Appointment.find({
+            doctor: req.params.id,
+            appointmentDate: {
+                $gte: new Date(date).setHours(0, 0, 0, 0),
+                $lt: new Date(date).setHours(23, 59, 59, 999),
+            },
+            status: { $in: ['pending', 'confirmed'] }, // Only count active appointments
+        }).select('timeSlot');
+
+        // Extract booked time slots
+        const bookedSlots = bookedAppointments.map((apt) => apt.timeSlot);
+
+        // Generate all possible time slots based on doctor's availability
+        const allSlots = generateTimeSlots(
+            dayAvailability.startTime,
+            dayAvailability.endTime,
+            30 // 30-minute slots
+        );
+
+        // Filter out booked slots
+        const availableSlots = allSlots.filter(
+            (slot) => !bookedSlots.includes(slot)
+        );
+
+        res.json({
+            date,
+            day: dayOfWeek,
+            available: true,
+            workingHours: {
+                start: dayAvailability.startTime,
+                end: dayAvailability.endTime,
+            },
+            totalSlots: allSlots.length,
+            bookedSlots: bookedSlots.length,
+            availableSlots: availableSlots.length,
+            slots: availableSlots,
+        });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
+// Helper function to generate time slots
+function generateTimeSlots(startTime, endTime, intervalMinutes = 30) {
+    const slots = [];
+    const [startHour, startMin] = startTime.split(':').map(Number);
+    const [endHour, endMin] = endTime.split(':').map(Number);
+
+    let currentHour = startHour;
+    let currentMin = startMin;
+
+    while (
+        currentHour < endHour ||
+        (currentHour === endHour && currentMin < endMin)
+    ) {
+        const timeSlot = `${String(currentHour).padStart(2, '0')}:${String(
+            currentMin
+        ).padStart(2, '0')}`;
+        slots.push(timeSlot);
+
+        currentMin += intervalMinutes;
+        if (currentMin >= 60) {
+            currentHour += Math.floor(currentMin / 60);
+            currentMin = currentMin % 60;
+        }
+    }
+
+    return slots;
+}

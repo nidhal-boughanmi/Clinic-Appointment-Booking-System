@@ -106,6 +106,7 @@ Application runs on **http://localhost:3000**
 ### Doctors
 - `GET /api/doctors` - Get all doctors
 - `GET /api/doctors/:id` - Get single doctor
+- `GET /api/doctors/:id/availability?date=YYYY-MM-DD` - Get available time slots for a date
 - `POST /api/doctors` - Create doctor profile (Admin only)
 - `PUT /api/doctors/:id` - Update doctor (Doctor/Admin)
 - `DELETE /api/doctors/:id` - Delete doctor (Admin only)
@@ -122,6 +123,15 @@ Application runs on **http://localhost:3000**
 - `GET /api/users/:id` - Get single user
 - `PUT /api/users/:id` - Update user
 - `DELETE /api/users/:id` - Delete user
+
+### Clinics
+- `GET /api/clinics` - Get all clinics
+- `GET /api/clinics/:id` - Get single clinic
+- `POST /api/clinics` - Create clinic (Admin only)
+- `PUT /api/clinics/:id` - Update clinic (Admin only)
+- `PUT /api/clinics/:id/doctors` - Assign doctor to clinic (Admin only)
+- `DELETE /api/clinics/:id/doctors/:doctorId` - Remove doctor from clinic (Admin only)
+- `DELETE /api/clinics/:id` - Delete clinic (Admin only)
 
 ## 👥 User Roles
 
