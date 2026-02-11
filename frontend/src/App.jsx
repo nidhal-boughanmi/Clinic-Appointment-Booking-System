@@ -14,6 +14,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Doctors from './pages/Doctors';
+import DoctorProfile from './pages/DoctorProfile';
 import Appointments from './pages/Appointments';
 import Profile from './pages/Profile';
 import AdminDashboard from './pages/AdminDashboard';
@@ -80,7 +81,7 @@ function AppContent() {
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/doctors" element={<Doctors />} />
-                    <Route path="/doctors/:id" element={<Doctors />} />
+                    <Route path="/doctors/:id" element={<DoctorProfile />} />
 
                     {/* Protected Routes */}
                     <Route
