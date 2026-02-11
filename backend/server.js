@@ -7,9 +7,13 @@ const errorHandler = require('./middleware/errorHandler');
 // Import routes
 const authRoutes = require('./routes/authRoutes');
 const doctorRoutes = require('./routes/doctorRoutes');
+const doctorSpecificRoutes = require('./routes/doctorSpecificRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
 const userRoutes = require('./routes/userRoutes');
 const clinicRoutes = require('./routes/clinicRoutes');
+
+// Import services
+const { scheduleReminders } = require('./services/reminderScheduler');
 
 // Initialize express app
 const app = express();
@@ -42,6 +46,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/doctors', doctorRoutes);
+app.use('/api/doctor', doctorSpecificRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/clinics', clinicRoutes);
@@ -51,6 +56,9 @@ app.use(errorHandler);
 
 // Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+
+    // Start appointment reminder scheduler
+    scheduleReminders();
 });

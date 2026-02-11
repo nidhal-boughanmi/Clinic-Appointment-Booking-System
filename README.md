@@ -22,6 +22,14 @@ A full-stack web application for managing clinic appointments built with React.j
 - Appointment oversight
 - System monitoring
 
+## 🔔 Automated Features
+
+### Appointment Reminders
+- Email reminders sent 24 hours before appointments
+- SMS reminders (mock - ready for Twilio integration)
+- Automatic hourly check for upcoming appointments
+- Notification tracking and status monitoring
+
 ## 🛠 Tech Stack
 
 ### Backend
@@ -132,6 +140,13 @@ Application runs on **http://localhost:3000**
 - `PUT /api/clinics/:id/doctors` - Assign doctor to clinic (Admin only)
 - `DELETE /api/clinics/:id/doctors/:doctorId` - Remove doctor from clinic (Admin only)
 - `DELETE /api/clinics/:id` - Delete clinic (Admin only)
+
+### Doctor-Specific (Protected)
+- `GET /api/doctor/profile` - Get logged-in doctor's profile
+- `PUT /api/doctor/profile` - Update logged-in doctor's profile
+- `GET /api/doctor/appointments` - Get doctor's appointments
+- `PUT /api/doctor/availability` - Update working hours/availability
+- `GET /api/doctor/stats` - Get appointment statistics and dashboard data
 
 ## 👥 User Roles
 
